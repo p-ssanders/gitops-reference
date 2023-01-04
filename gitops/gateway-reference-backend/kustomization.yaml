@@ -1,0 +1,5 @@
+resources:
+- 00-namespace.yaml
+# - 02-github-secret.yaml
+- 01-pgp-public-keys.yaml
+- 02-gitrepository.yaml

@@ -1,0 +1,21 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: backend
+  namespace: gateway-reference-backend
+spec:
+  interval: 2m0s
+  url: ssh://github.com/p-ssanders/gateway-reference-architecture.git
+  ref:
+    branch: main
+  secretRef:
+    name: github-ssh-credentials
+  ignore: |
+    /*
+    !/backend/
+    !/kubernetes/backend/
+  verify:
+    mode: head
+    secretRef:
+      name: pgp-public-keys
