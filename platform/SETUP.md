@@ -47,8 +47,8 @@
 
 https://fluxcd.io/flux/guides/mozilla-sops/
 
-    $ gpg --export-secret-keys --armor "${KEY_FP}" | kubectl create secret generic sops-gpg --namespace=kustomize-system -o yaml --dry-run=client --from-file=sops.asc=/dev/stdin > sops-gpg-secret.yaml
-    $ k apply -f platform/flux-kustomize/sops-pgp-secret.yaml
+    $ gpg --export-secret-keys --armor "${KEY_FP}" | kubectl create secret generic sops-keys --namespace=kustomize-system -o yaml --dry-run=client --from-file=identity.asc=/dev/stdin > platform/flux-kustomize/sops-keys-secret.yaml
+    $ k apply -f platform/flux-kustomize/sops-keys-secret.yaml
     $ k apply -f platform/flux-kustomize/gitops-ssh-credentials-secret.yaml
     $ k apply -f platform/flux-kustomize/gitops-pgp-public-keys-secret.yaml
     $ k apply -f platform/flux-kustomize/gitops-gitrepository.yaml
