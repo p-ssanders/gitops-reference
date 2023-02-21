@@ -8,7 +8,7 @@
 
     $ tanzu management-cluster create --ui
 
-##  Create a Workload Cluster
+##  Create a Workload Cluster (this is the basis of the platform)
 
     $ tanzu cluster create multi-tenant-platform --file platform/multi-tenant-platform.yaml
 
@@ -37,11 +37,9 @@
 ##  Install Flux Source & Kustomize for GitOps with SOPS/PGP
 
     $ k create ns flux-system
-    $ *TODO* create sops, pgp secrets
+    $ # create SOPS secret, reference: https://fluxcd.io/flux/guides/mozilla-sops/
     $ GITHUB_TOKEN=... flux bootstrap github --owner=p-ssanders --repository=secure-supply-chain-demo --branch=main --path=gitops --private-key-file=github --personal
     $ gpg --export-secret-keys --armor "${KEY_FP}" | kubectl create secret generic sops-keys --namespace=flux-system --from-file=identity.asc=/dev/stdin
-
-  reference: https://fluxcd.io/flux/guides/mozilla-sops/
 
 ##  Install Harbor
 

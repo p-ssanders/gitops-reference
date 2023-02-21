@@ -1,6 +1,12 @@
 #   Secure Supply Chain Demo
 
-Goal: Build a simple kubernetes platform that implements a secure software supply chain.
+This repository contains configuration to build a simple kubernetes platform that implements a secure software supply chain based on the [Supply chain Level for Software Artifact (SLSA)](https://slsa.dev/) framework.
+
+![](slsa.svg)
+
+The platform setup guide is [here](platform/README.md).
+
+##  Source Integrity
 
 The supply chain begins with a commit to an application's repository.
 
@@ -16,4 +22,8 @@ The `gitops` root directory is watched by a a Flux `Kustomization` that automati
 For each subdirectory (i.e.: application), Flux automatically creates:
 
 1.  A namespace for the application
-1.  A Flux `GitRepository` in the application's namespace that watches for changes in the application's repository, and verifies commit signatures against the PGP keys generated during onboarding -- the first step in signed provenance
+1.  A Flux `GitRepository` in the application's namespace that watches for changes in the application's repository
+
+Threats "A: Submit unauthorized change" and "B: compromise source repo" are mitigated at this point because:
+1.  Unauthorized changes can be committed, but only commits signed with the PGP keys produced during onboarding will result in the `GitRepository` being in a healthy state. For purposes of this demonstration, we can assume two-person review occurred.
+1.  The source repo is protected by a SOPS/PGP-encrypted SSH key, and hosted on GitHub. Only users with access to the `flux-system` namespace have access the decryption key. The `flux-system` namespace has been secured according to Flux's [Multi-tenancy Lockdown](https://fluxcd.io/flux/installation/#multi-tenancy-lockdown) guidance.
