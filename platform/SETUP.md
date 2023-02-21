@@ -34,24 +34,14 @@
     $ k apply -f platform/external-dns/aws-credentials-secret.yaml
     $ tanzu package install external-dns --package external-dns.tanzu.vmware.com --version 0.12.2+vmware.4-tkg.1 --values-file platform/external-dns/values.yaml -n tanzu-cli-managed-packages
 
-##  Install Flux Source Controller
+##  Install Flux Source & Kustomize for GitOps with SOPS/PGP
 
+    $ k create ns flux-system
+    $ *TODO* create sops, pgp secrets
     $ GITHUB_TOKEN=... flux bootstrap github --owner=p-ssanders --repository=secure-supply-chain-demo --branch=main --path=gitops --private-key-file=github --personal
+    $ gpg --export-secret-keys --armor "${KEY_FP}" | kubectl create secret generic sops-keys --namespace=flux-system --from-file=identity.asc=/dev/stdin
 
-##  Install Flux Kustomize Controller
-
-    $
-
-##  Configure Flux Kustomize Controller for GitOps with SOPS/PGP
-
-https://fluxcd.io/flux/guides/mozilla-sops/
-
-    $ gpg --export-secret-keys --armor "${KEY_FP}" | kubectl create secret generic sops-keys --namespace=kustomize-system -o yaml --dry-run=client --from-file=identity.asc=/dev/stdin > platform/flux-kustomize/sops-keys-secret.yaml
-    $ k apply -f platform/flux-kustomize/sops-keys-secret.yaml
-    $ k apply -f platform/flux-kustomize/gitops-ssh-credentials-secret.yaml
-    $ k apply -f platform/flux-kustomize/gitops-pgp-public-keys-secret.yaml
-    $ k apply -f platform/flux-kustomize/gitops-gitrepository.yaml
-    $ k apply -f platform/flux-kustomize/gitops-kustomization.yaml
+  reference: https://fluxcd.io/flux/guides/mozilla-sops/
 
 ##  Install Harbor
 
