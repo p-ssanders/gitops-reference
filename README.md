@@ -1,6 +1,6 @@
 #   Secure Supply Chain Demo
 
-Goal: Build a simple kubernetes platform using Tanzu Kubernetes Grid that implements a secure software supply chain.
+Goal: Build a simple kubernetes platform that implements a secure software supply chain.
 
 The supply chain begins with a commit to an application's repository.
 

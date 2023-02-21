@@ -2,12 +2,7 @@
 
 ##  Prepare to deploy management clusters
 
-1.  Create an access key
-1.  `aws configure --profile tkg-demo`
-1.  `export AWS_PROFILE=tkg-demo`
-1.  `aws ec2 create-key-pair --key-name tkg-demo --output json | jq .KeyMaterial -r > tkg-demo.pem`
-
-([docs](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.6/vmware-tanzu-kubernetes-grid-16/GUID-mgmt-clusters-aws.html))
+([docs](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/2.1/tkg-deploy-mc-21/mgmt-reqs-prep-aws.html))
 
 ##  Deploy a management cluster
 
@@ -15,33 +10,37 @@
 
 ##  Create a Workload Cluster
 
-    $ tanzu cluster create demo-acceptance-workload --file platform/demo-acceptance-workload.yaml
     $ tanzu cluster create multi-tenant-platform --file platform/multi-tenant-platform.yaml
+
+##  Add a Package Repository
+
+    $ tanzu package repository add tanzu-standard --url projects.registry.vmware.com/tkg/packages/standard/repo:v2.1.0 --namespace tkg-system
+    $ k create ns tanzu-cli-managed-packages
 
 ##  Install Cert-Manager
 
-    $ tanzu package install cert-manager --package-name cert-manager.tanzu.vmware.com --version 1.7.2+vmware.1-tkg.1
+    $ tanzu package install cert-manager --package cert-manager.tanzu.vmware.com --version 1.7.2+vmware.3-tkg.1 -n tanzu-cli-managed-packages
     $ k apply -f platform/cert-manager/aws-credentials-secret.yaml
     $ k apply -f platform/cert-manager/cluster-issuer-staging.yaml
     $ k apply -f platform/cert-manager/cluster-issuer-prod.yaml
 
 ##  Install Contour
 
-    $ tanzu package install contour --package-name contour.tanzu.vmware.com --version 1.20.2+vmware.1-tkg.1 --values-file platform/contour/values.yaml
+    $ tanzu package install contour --package contour.tanzu.vmware.com --version 1.22.3+vmware.1-tkg.1 --values-file platform/contour/values.yaml -n tanzu-cli-managed-packages
 
 ##  Install External DNS
 
     $ k create ns tanzu-system-service-discovery
     $ k apply -f platform/external-dns/aws-credentials-secret.yaml
-    $ tanzu package install external-dns --package-name external-dns.tanzu.vmware.com --version 0.11.0+vmware.1-tkg.2 -f platform/external-dns/values.yaml
+    $ tanzu package install external-dns --package external-dns.tanzu.vmware.com --version 0.12.2+vmware.4-tkg.1 --values-file platform/external-dns/values.yaml -n tanzu-cli-managed-packages
 
 ##  Install Flux Source Controller
 
-    $ tanzu package install fluxcd-source --package-name fluxcd-source-controller.tanzu.vmware.com --version 0.24.4+vmware.1-tkg.4
+    $ GITHUB_TOKEN=... flux bootstrap github --owner=p-ssanders --repository=secure-supply-chain-demo --branch=main --path=gitops --private-key-file=github --personal
 
 ##  Install Flux Kustomize Controller
 
-    $ tanzu package install fluxcd-kustomize --package-name fluxcd-kustomize-controller.tanzu.vmware.com --version 0.24.4+vmware.1-tkg.1
+    $
 
 ##  Configure Flux Kustomize Controller for GitOps with SOPS/PGP
 
@@ -58,5 +57,5 @@ https://fluxcd.io/flux/guides/mozilla-sops/
 
     $ imgpkg pull -b projects.registry.vmware.com/tkg/packages/standard/harbor:v2.5.3_vmware.1-tkg.1 -o /tmp/harbor-package-2.5.3+vmware.1-tkg.1
     $ bash /tmp/harbor-package-2.5.3+vmware.1-tkg.1/config/scripts/generate-passwords.sh platform/harbor/values.yaml
-    $ tanzu package install harbor --package-name harbor.tanzu.vmware.com --version 2.5.3+vmware.1-tkg.1 -f platform/harbor/values-secret.yaml
+    $ tanzu package install harbor --package harbor.tanzu.vmware.com --version 2.5.3+vmware.1-tkg.1 -f platform/harbor/values-secret.yaml
     $ k apply -f platform/harbor/package-install-overlay.yaml

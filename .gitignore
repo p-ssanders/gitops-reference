@@ -4,3 +4,5 @@
 **/*-secret.*
 !/gitops/**/*-secret.*
 kubeconfig.yaml
+github*
+.DS_Store
