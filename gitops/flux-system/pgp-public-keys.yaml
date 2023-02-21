@@ -5,3 +5,4 @@ data:
 kind: Secret
 metadata:
   name: pgp-public-keys
+  namespace: flux-system
