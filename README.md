@@ -1,6 +1,6 @@
 #   Secure Supply Chain Demo
 
-This repository contains configuration to build a simple kubernetes platform that implements a secure software supply chain based on the [Supply chain Level for Software Artifact (SLSA)](https://slsa.dev/) framework.
+This repository contains configuration to demonstrate a kubernetes platform that implements a secure software supply chain based on the [Supply chain Level for Software Artifact (SLSA)](https://slsa.dev/) framework.
 
 ![](slsa.svg)
 
@@ -17,13 +17,14 @@ The platform is made aware of an application's repository through an out-of-scop
 1.  PGP keys for the authors of the application's source code
 1.  A subdirectory in this repository under the `gitops` directory
 
-The `gitops` root directory is watched by a a Flux `Kustomization` that automatically synchronizes any changes to subdirectories to the platform.
+The `gitops` root directory is watched by a a Flux `Kustomization` that automatically synchronizes any changes to subdirectories to the platform, including pruning objects that are not declared in the source.
 
 For each subdirectory (i.e.: application), Flux automatically creates:
 
 1.  A namespace for the application
 1.  A Flux `GitRepository` in the application's namespace that watches for changes in the application's repository
 
-Threats "A: Submit unauthorized change" and "B: compromise source repo" are mitigated at this point because:
-1.  Unauthorized changes can be committed, but only commits signed with the PGP keys produced during onboarding will result in the `GitRepository` being in a healthy state. For purposes of this demonstration, we can assume two-person review occurred.
-1.  The source repo is protected by a SOPS/PGP-encrypted SSH key, and hosted on GitHub. Only users with access to the `flux-system` namespace have access the decryption key. The `flux-system` namespace has been secured according to Flux's [Multi-tenancy Lockdown](https://fluxcd.io/flux/installation/#multi-tenancy-lockdown) guidance.
+Threats **"A: Submit unauthorized change"** and **"B: compromise source repo"** are mitigated at this point for all applications managed by this repository:
+
+1.  Only commits signed with the author's PGP keys produced during onboarding will result in the `GitRepository` being in a healthy state. Two-person review is outside the scope of this demonstration.
+1.  The source repository is hosted on GitHub, and protected requiring an SSH key for access. The SSH key is encrypted with SOPS/PGP. Only users with access to the `flux-system` namespace have access the decryption key. The `flux-system` namespace has been secured according to Flux's [Multi-tenancy Lockdown](https://fluxcd.io/flux/installation/#multi-tenancy-lockdown) guidance.
